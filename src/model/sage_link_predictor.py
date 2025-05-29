@@ -20,9 +20,9 @@ class LinkPredictor(nn.Module):
         self.mlp = nn.Sequential(
             nn.Linear(embed_dim * 2, 128),
             nn.ReLU(),
-            nn.Linear(128, 1)
+            nn.Linear(128, 1)  # no sigmoid here
         )
 
     def forward(self, x_i, x_j):
         z = torch.cat([x_i, x_j], dim=1)
-        return torch.sigmoid(self.mlp(z))
+        return self.mlp(z).squeeze()  # shape: [batch]
