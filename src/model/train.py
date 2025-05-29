@@ -1,9 +1,5 @@
-# src/model/train.py
 import torch
-import random
-import torch.nn as nn
 from torch_geometric.utils import negative_sampling
-from torch_geometric.loader import DataLoader
 from src.model.sage_link_predictor import GraphSAGE, LinkPredictor
 
 def get_positive_edges(data):
@@ -16,9 +12,9 @@ def get_negative_edges(data, num_neg_samples=None):
         num_neg_samples=num_neg_samples or data.edge_index.size(1)
     ).t()
 
-def train(data, epochs=50, hidden_channels=64, lr=0.01):
+def train(data, epochs=50, hidden_channels=64, lr=0.01, layers=2, dropout=0.2):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = GraphSAGE(data.num_node_features, hidden_channels, hidden_channels).to(device)
+    model = GraphSAGE(in_channels=data.num_node_features, hidden_channels=hidden_channels, out_channels=hidden_channels, num_layers=layers, dropout=dropout).to(device)
     predictor = LinkPredictor(hidden_channels).to(device)
     data = data.to(device)
 
@@ -34,7 +30,7 @@ def train(data, epochs=50, hidden_channels=64, lr=0.01):
         pos_edge_index = get_positive_edges(data)
         neg_edge_index = get_negative_edges(data)
 
-        criterion = nn.BCEWithLogitsLoss()
+        criterion = torch.nn.BCEWithLogitsLoss()
 
         pos_labels = torch.ones(pos_edge_index.size(0), device=device)
         neg_labels = torch.zeros(neg_edge_index.size(0), device=device)
