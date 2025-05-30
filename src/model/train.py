@@ -41,4 +41,4 @@ def train(data, val_data=None, epochs=50, hidden_channels=64, lr=0.01, layers=2,
             val_data = val_data.to(device)
             evaluate(model, predictor, val_data)
 
-    return model, predictor
+    return model, predictor, z
