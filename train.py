@@ -12,5 +12,5 @@ if __name__ == "__main__":
     layers = config['num_layers']
     dropout = config['dropout']
 
-    data = torch.load("data/processed/graph_data.pt", weights_only=False)
+    data = torch.load("data/processed/train_data.pt", weights_only=False)
     train(data, epochs=epochs, hidden_channels=hidden_dim, lr=lr, layers=layers, dropout=dropout)
