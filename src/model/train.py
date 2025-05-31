@@ -18,7 +18,6 @@ def train(data, val_data=None, epochs=50, hidden_channels=64, lr=0.01, layers=2,
 
         z = model(data.x, data.edge_index)
 
-        # Positive edges
         pos_edge_index = get_positive_edges(data)
         neg_edge_index = get_negative_edges(data)
 

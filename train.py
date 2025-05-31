@@ -1,30 +1,57 @@
 import torch
 import json
+import argparse
+from pathlib import Path
 from src.model.train import train
 from src.model.evaluate import evaluate
 from src.analysis.visualise import EmbeddingVisualizer
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Train and evaluate the collaboration prediction model.")
+    parser.add_argument('--data_dir', type=str, default='data/processed', help='Directory containing train/val/test .pt files')
+    parser.add_argument('--plot_dir', type=str, default='data/plots', help='Directory to save visualisations')
+    parser.add_argument('--config', type=str, default='src/config.json', help='Path to the config JSON file')
+    parser.add_argument('--epochs', type=int, help='Number of training epochs')
+    parser.add_argument('--lr', type=float, help='Learning rate')
+    parser.add_argument('--hidden_dim', type=int, help='Hidden layer dimension')
+    parser.add_argument('--layers', type=int, help='Number of GNN layers')
+    parser.add_argument('--dropout', type=float, help='Dropout probability')
+    return parser.parse_args()
+
 if __name__ == "__main__":
-    with open('src/config.json', 'r') as file:
+    args = parse_args()
+
+    with open(args.config, 'r') as file:
         config = json.load(file)
 
-    lr = config['learning_rate']
-    epochs = config['num_epochs']
-    hidden_dim = config['hidden_dim']
-    layers = config['num_layers']
-    dropout = config['dropout']
+    lr = args.lr if args.lr is not None else config['learning_rate']
+    epochs = args.epochs if args.epochs is not None else config['num_epochs']
+    hidden_dim = args.hidden_dim if args.hidden_dim is not None else config['hidden_dim']
+    layers = args.layers if args.layers is not None else config['num_layers']
+    dropout = args.dropout if args.dropout is not None else config['dropout']
 
-    train_data = torch.load("data/processed/train_data.pt", weights_only=False)
-    val_data = torch.load("data/processed/val_data.pt", weights_only=False)
-    model, predictor, final_embeddings = train(data=train_data, val_data=val_data, epochs=epochs, hidden_channels=hidden_dim, lr=lr, layers=layers, dropout=dropout)
+    data_dir = Path(args.data_dir)
+    train_data = torch.load(data_dir / "train_data.pt", weights_only=False)
+    val_data = torch.load(data_dir / "val_data.pt", weights_only=False)
+    test_data = torch.load(data_dir / "test_data.pt", weights_only=False)
 
-    test_data = torch.load("data/processed/test_data.pt", weights_only=False)
+    model, predictor, final_embeddings = train(
+        data=train_data,
+        val_data=val_data,
+        epochs=epochs,
+        hidden_channels=hidden_dim,
+        lr=lr,
+        layers=layers,
+        dropout=dropout
+    )
+
     evaluate(model, predictor, test_data)
 
-    # visualise_tsne_with_institutions(final_embeddings=final_embeddings, data=train_data)
-
     viz = EmbeddingVisualizer(embeddings=final_embeddings, data=train_data, predictor=predictor)
-    viz.visualise_pca("data/plots/pca.png")
-    viz.visualise_tsne("data/plots/tsne.png")
-    viz.visualise_tsne_institutions("data/plots/tsne_inst.png")
+    plot_dir = Path(args.plot_dir)
+    plot_dir.mkdir(parents=True, exist_ok=True)
+
+    viz.visualise_pca(plot_dir / "pca.png")
+    viz.visualise_tsne(plot_dir / "tsne.png")
+    viz.visualise_tsne_institutions(plot_dir / "tsne_inst.png")
     viz.analyze_feature_influence()

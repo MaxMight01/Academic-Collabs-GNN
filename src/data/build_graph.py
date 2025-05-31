@@ -28,14 +28,19 @@ def preprocess_edges(edges, id_map):
     ], dtype=torch.long).t().contiguous()
     return edge_index
 
-def build_graph(raw_dir, processed_path):
+def build_graph(raw_dir, processed_dir):
     authors, edges = load_data(raw_dir)
     node_features, id_map = preprocess_nodes(authors)
     edge_index = preprocess_edges(edges, id_map)
     data = Data(x=node_features, edge_index=edge_index)
 
-    torch.save(data, processed_path)
-    print(f"Graph saved to {processed_path}")
+    torch.save(data, processed_dir / "graph_data.pt")
+    print(f"Graph saved to {processed_dir / 'graph_data.pt'}")
 
 if __name__ == "__main__":
-    build_graph("data/raw", "data/processed/graph_data.pt")
+    root_dir = Path(__file__).resolve().parents[2]
+    raw_dir = root_dir / "data" / "raw"
+    processed_dir = root_dir / "data" / "processed"
+    processed_dir.mkdir(parents=True, exist_ok=True)
+    
+    build_graph(raw_dir=raw_dir, processed_path=processed_dir)
