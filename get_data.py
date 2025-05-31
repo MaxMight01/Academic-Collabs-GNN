@@ -13,6 +13,7 @@ def main():
 
     parser.add_argument('--raw_dir', type=str, default=raw_dir)
     parser.add_argument('--processed_dir', type=str, default=processed_dir)
+    parser.add_argument('--topic', type=str, default="computer science")
     parser.add_argument('--email', type=str, default="ramdassingh399+openalex@gmail.com")
     args = parser.parse_args()
 
@@ -20,7 +21,7 @@ def main():
     raw_dir = Path(args.raw_dir)
     processed_dir = Path(args.processed_dir)
 
-    curate_graph_data(raw_data_dir=raw_dir, email=args.email)
+    curate_graph_data(raw_data_dir=raw_dir, email=args.email, topic=args.topic)
     build_graph(raw_dir=raw_dir, processed_dir=processed_dir)
     split_graph_edges(processed_dir=processed_dir)
 

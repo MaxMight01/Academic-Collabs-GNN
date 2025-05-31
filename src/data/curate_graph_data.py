@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 import networkx as nx
 
-def curate_graph_data(raw_data_dir=None, min_authors=200, max_authors=300, email=None):
+def curate_graph_data(raw_data_dir=None, min_authors=200, max_authors=300, email=None, topic="computer science"):
     if raw_data_dir is None:
         root_dir = Path(__file__).resolve().parents[2]
         raw_data_dir = root_dir / "data" / "raw"
@@ -14,7 +14,9 @@ def curate_graph_data(raw_data_dir=None, min_authors=200, max_authors=300, email
         pyalex.config.email = email
 
     works_iter_pages = Works().search_filter(
-        title_and_abstract="computer science"
+        title_and_abstract=topic
+    ).sort(
+        cited_by_count="desc"
     ).filter(
         publication_year="2020|2021|2022|2023|2024",
         is_oa=True,

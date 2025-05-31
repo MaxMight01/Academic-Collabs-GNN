@@ -1,10 +1,41 @@
 import os
+import math
 import torch
 import numpy as np
+import pandas as pd
+import networkx as nx
+from pathlib import Path
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+from networkx.algorithms.community import greedy_modularity_communities
 from src.utils.utils import get_positive_edges, get_negative_edges
+
+def visualise_graph(graph_data_path, save_path=None):
+    data = torch.load(graph_data_path, weights_only=False)
+    
+    G = nx.Graph()
+    edges = data.edge_index.t().tolist()
+    G.add_edges_from(edges)
+    G.add_nodes_from(range(data.num_nodes))
+
+    citation_counts = data.x[:, -1].tolist()
+    node_sizes = [max(30, min(int(30 * math.log1p(c)), 200)) for c in citation_counts]
+
+    pos = nx.spring_layout(G, seed=42, k=0.2)
+
+    plt.figure(figsize=(12, 9))
+    nx.draw_networkx_nodes(G, pos, node_color="#1f77b4", node_size=node_sizes, alpha=0.9)
+    nx.draw_networkx_edges(G, pos, alpha=0.5, width=0.9)
+    plt.title("Graph Visualization (Citation-Scaled Nodes)")
+    plt.axis("off")
+
+    if save_path:
+        Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+    else:
+        plt.show()
 
 class EmbeddingVisualizer:
     def __init__(self, embeddings, data, predictor=None):
