@@ -5,11 +5,13 @@ from pathlib import Path
 from src.model.train import train
 from src.model.evaluate import evaluate
 from src.analysis.visualise import EmbeddingVisualizer
+from src.utils.utils import log_training_run
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train and evaluate the collaboration prediction model.")
     parser.add_argument('--data_dir', type=str, default='data/processed', help='Directory containing train/val/test .pt files')
     parser.add_argument('--plot_dir', type=str, default='data/plots', help='Directory to save visualisations')
+    parser.add_argument('--log_dir', type=str, default='data/log', help='Directory to save logs')
     parser.add_argument('--config', type=str, default='src/config.json', help='Path to the config JSON file')
     parser.add_argument('--epochs', type=int, help='Number of training epochs')
     parser.add_argument('--lr', type=float, help='Learning rate')
@@ -45,7 +47,18 @@ if __name__ == "__main__":
         dropout=dropout
     )
 
-    evaluate(model, predictor, test_data)
+    metrics = evaluate(model, predictor, test_data, True)
+    hyperparams = {
+        "learning_rate": lr,
+        "epochs": epochs,
+        "layers": layers,
+        "hidden_dim": hidden_dim,
+        "dropout": dropout
+    }
+
+    log_dir = Path(args.log_dir)
+    log_training_run(metrics, hyperparams, log_dir)
+    print("Metadata saved.\n")
 
     viz = EmbeddingVisualizer(embeddings=final_embeddings, data=train_data, predictor=predictor)
     plot_dir = Path(args.plot_dir)
@@ -54,4 +67,5 @@ if __name__ == "__main__":
     viz.visualise_pca(plot_dir / "pca.png")
     viz.visualise_tsne(plot_dir / "tsne.png")
     viz.visualise_tsne_institutions(plot_dir / "tsne_inst.png")
+    print("Plots saved\n.")
     viz.analyze_feature_influence()

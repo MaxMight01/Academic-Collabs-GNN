@@ -2,13 +2,11 @@ import os
 import math
 import torch
 import numpy as np
-import pandas as pd
 import networkx as nx
 from pathlib import Path
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from networkx.algorithms.community import greedy_modularity_communities
 from src.utils.utils import get_positive_edges, get_negative_edges
 
 def visualise_graph(graph_data_path, save_path=None):

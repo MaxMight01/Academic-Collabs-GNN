@@ -1,5 +1,4 @@
 import torch
-from torch_geometric.utils import negative_sampling
 from src.model.sage_link_predictor import GraphSAGE, LinkPredictor
 from src.model.evaluate import evaluate
 from src.utils.utils import get_positive_edges, get_negative_edges

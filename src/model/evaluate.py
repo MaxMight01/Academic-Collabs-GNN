@@ -3,7 +3,7 @@ from sklearn.metrics import roc_auc_score, accuracy_score, f1_score
 from src.utils.utils import get_negative_edges, get_positive_edges
 
 @torch.no_grad()
-def evaluate(model, predictor, data):
+def evaluate(model, predictor, data, rtrn=False):
     model.eval()
     device = next(model.parameters()).device
 
@@ -27,3 +27,6 @@ def evaluate(model, predictor, data):
     f1   = f1_score(labels, pred)
 
     print(f"VAL →  AUC: {auc:.4f}   ACC: {acc:.4f}   F1: {f1:.4f}")
+
+    if rtrn:
+        return {"AUC": auc, "Accuracy": acc, "F1": f1}

@@ -1,0 +1,15 @@
+{
+    "timestamp": "20250531_230024",
+    "hyperparameters": {
+        "learning_rate": 0.01,
+        "epochs": 101,
+        "layers": 3,
+        "hidden_dim": 128,
+        "dropout": 0.3
+    },
+    "metrics": {
+        "AUC": 0.970438054286482,
+        "Accuracy": 0.924863387978142,
+        "F1": 0.9290322580645162
+    }
+}

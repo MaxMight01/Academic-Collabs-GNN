@@ -3,6 +3,5 @@
   "num_epochs": 101,
   "num_layers": 3,
   "hidden_dim": 128,
-  "dropout": 0.3,
-  "batch_size": 512
+  "dropout": 0.3
 }
