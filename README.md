@@ -59,7 +59,7 @@ python train.py \
 
 **Evaluation:** Computes note embeddings on the `edge_index` of the data, and scores both real links and negatives.
 
-**Visualization:** Saves plots for PCA and t-SNE. Also output correlation between the evaluation score and publication count difference, evaluation score and citation count difference, and evaluation score and institution Jaccard index.
+**Visualization:** Saves plots for PCA and t-SNE. Also outputs correlation between the evaluation score and publication count difference, evaluation score and citation count difference, and evaluation score and institution Jaccard index.
 
 **Logging:** A JSON file is created consisting of the evaluated metrics of the model and the hyperparameters used.
 
@@ -80,6 +80,8 @@ Just a little bonus; visualizes the raw coauthorship graph, with node sizes scal
 ## 2. Results & Insights
 
 - Validation AUC/Accuracy/F1 reach ~ 0.95 / 0.90 / 0.90 by epoch 100.
+- Correlation between evaluation score and institution Jaccard index is consistently the highest, suggesting that institution similarlity plays a major facotr in determining collaborations.
+- Correlation between evaluation score and citation count is consistently the lowest, suggesting that citing one's work does not necessarily mean you collab with them.
 - PCA + t-SNE plots don't show any clear clustering of authors by institution. However, authors with higher citation counts tend to group slighty more than usual in t-SNE plot.
 - The raw graph plot highlights a lot of disjoint subgraphs.
 
